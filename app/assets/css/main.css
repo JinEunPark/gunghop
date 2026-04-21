@@ -1,0 +1,18 @@
+@import './tokens.css';
+@import './app.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg-1);
+}
+
+#__nuxt {
+  min-height: 100vh;
+}
