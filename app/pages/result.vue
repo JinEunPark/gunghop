@@ -77,7 +77,13 @@ const unlocked = ref(false)
 const score = ref(0)
 
 const config = useRuntimeConfig()
-const siteUrl = computed(() => (config.public.siteUrl as string) || 'nyangsang.love')
+const siteUrl = computed(() => {
+  const envUrl = (config.public.siteUrl as string) || ''
+  if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+    return import.meta.client ? window.location.origin : 'nyangsang.love'
+  }
+  return envUrl
+})
 const shareCardRef = ref<HTMLElement | null>(null)
 
 const shareDate = computed(() => {

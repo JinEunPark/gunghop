@@ -53,7 +53,11 @@ export function useKakaoShare() {
   }
 
   function siteUrl(): string {
-    return (config.public.siteUrl as string) || window.location.origin
+    const envUrl = (config.public.siteUrl as string) || ''
+    if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+      return window.location.origin
+    }
+    return envUrl
   }
 
   function shareScrap() {
