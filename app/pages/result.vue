@@ -232,7 +232,7 @@ function retry() {
     </div>
 
     <div class="body-wrap">
-      <AdPlaceholder />
+      <AdUnit slot="" label="배너 광고" />
 
       <div class="eyebrow eyebrow-brand">무료 공개</div>
       <div
@@ -251,7 +251,7 @@ function retry() {
         <div class="body">{{ s.body }}</div>
       </div>
 
-      <div class="ad-spacer"><AdPlaceholder label="네이티브 광고" /></div>
+      <div class="ad-spacer"><AdUnit slot="" format="fluid" label="네이티브 광고" /></div>
 
       <template v-if="!unlocked">
         <div class="eyebrow eyebrow-lavender">자물쇠 · 7개</div>
@@ -274,8 +274,8 @@ function retry() {
         <div class="more-note">+ 4개 섹션이 더 있어요</div>
 
         <div class="cta-wrap">
-          <button class="unlock-cta" @click="unlocked = true">🎁 광고 보고 전체 결과 확인하기</button>
-          <div class="cta-sub">15초 광고 · 7개 섹션 모두 해금</div>
+          <button class="unlock-cta" @click="unlocked = true">🔓 전체 결과 확인하기</button>
+          <div class="cta-sub">모든 섹션 한 번에 열기</div>
         </div>
       </template>
 
@@ -289,7 +289,7 @@ function retry() {
             </div>
             <div class="body" style="white-space: pre-line">{{ s.body }}</div>
           </div>
-          <div v-if="i === 3" class="ad-spacer"><AdPlaceholder /></div>
+          <div v-if="i === 3" class="ad-spacer"><AdUnit slot="" label="배너 광고" /></div>
         </template>
       </template>
 
@@ -315,29 +315,32 @@ function retry() {
 
       <div class="aff-wrap">
         <div class="eyebrow eyebrow-brand">두 분께 추천해요</div>
-        <div class="aff-card">
-          <div class="ic">🎁</div>
-          <div class="aff-text">
-            <div class="title">어울리는 결혼정보회사 <span class="badge-ad">광고</span></div>
-            <div class="sub">듀오 · 가연 · 매칭 특가</div>
-          </div>
-          <div class="arrow">→</div>
-        </div>
-        <div class="aff-card">
-          <div class="ic">💒</div>
-          <div class="aff-text">
-            <div class="title">어울리는 웨딩홀 <span class="badge-ad">광고</span></div>
-            <div class="sub">서울·경기 예약 가능</div>
-          </div>
-          <div class="arrow">→</div>
-        </div>
-        <div class="aff-card">
+        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
           <div class="ic">💍</div>
           <div class="aff-text">
-            <div class="title">예물은 여기서 <span class="badge-ad">광고</span></div>
-            <div class="sub">커플링 최대 30% 할인</div>
+            <div class="title">커플링 · 예물 반지 <span class="badge-ad">광고</span></div>
+            <div class="sub">쿠팡 인기 커플링 모아보기</div>
           </div>
           <div class="arrow">→</div>
+        </a>
+        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
+          <div class="ic">🎁</div>
+          <div class="aff-text">
+            <div class="title">웨딩 · 결혼 선물 <span class="badge-ad">광고</span></div>
+            <div class="sub">양가 부모님 선물 추천</div>
+          </div>
+          <div class="arrow">→</div>
+        </a>
+        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
+          <div class="ic">📖</div>
+          <div class="aff-text">
+            <div class="title">궁합 · 사주 책 <span class="badge-ad">광고</span></div>
+            <div class="sub">더 깊이 알아보기</div>
+          </div>
+          <div class="arrow">→</div>
+        </a>
+        <div class="aff-disclosure">
+          이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
         </div>
       </div>
 
@@ -534,6 +537,14 @@ function retry() {
 .aff-wrap { margin-top: 24px; }
 .aff-text { flex: 1; min-width: 0; }
 .arrow { color: var(--gray-400); }
+a.aff-card { text-decoration: none; color: inherit; }
+.aff-disclosure {
+  margin-top: 12px;
+  font-size: 10px;
+  color: var(--gray-400);
+  line-height: 1.5;
+  padding: 0 4px;
+}
 
 .signoff {
   margin-top: 24px;

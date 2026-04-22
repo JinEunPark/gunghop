@@ -112,7 +112,7 @@ onBeforeUnmount(stopTicker)
       </template>
     </div>
     <div v-if="!failure" class="ad-wrap">
-      <AdPlaceholder label="전면 광고 · AdSense" />
+      <AdUnit slot="" label="전면 광고" />
     </div>
   </div>
 </template>
