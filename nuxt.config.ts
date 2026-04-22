@@ -6,11 +6,12 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   nitro: {
-    preset: 'cloudflare-pages'
+    preset: 'vercel'
   },
 
   runtimeConfig: {
     geminiApiKey: process.env.GEMINI_API_KEY,
+    geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     public: {
       adsenseClient: process.env.NUXT_PUBLIC_ADSENSE_CLIENT,
       gaId: process.env.NUXT_PUBLIC_GA_ID,
@@ -26,6 +27,16 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/webp', href: '/assets/main_logo_char.webp' },
+        { rel: 'apple-touch-icon', href: '/assets/main_logo_char.webp' }
+      ],
+      script: [
+        {
+          src: 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js',
+          defer: true
+        }
       ]
     }
   }

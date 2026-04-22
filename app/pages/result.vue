@@ -1,69 +1,142 @@
 <script setup lang="ts">
+import type { AnalysisResult } from '~~/shared/types/analysis'
+
 useHead({ title: '궁합 결과 · 냥상가' })
 
 const router = useRouter()
 const { photoA, photoB, reset } = usePhotos()
 
-type Tier = 'low' | 'mid' | 'high'
+const storedResult = ref<AnalysisResult | null>(null)
 
-const RESULT_DATA: Record<Tier, {
-  score: number
-  stars: number
-  summary: string
-  oneLine: string
-  free: { emoji: string; title: string; body: string; rating?: number }[]
-}> = {
-  low: {
-    score: 52,
-    stars: 2,
-    summary: '노력이 필요한 궁합이에요 🌱',
-    oneLine: '성격 상성은 주의, 대화로 풀어갈 여지 있음',
-    free: [
-      { emoji: '👤', title: '얼굴형 상성', body: '두 분의 얼굴형은 살짝 엇갈리는 면이 있어요. 서로의 리듬이 다르지만, 그만큼 배우는 점도 많은 조합이에요.' },
-      { emoji: '💰', title: '재물 시너지', body: '각자의 페이스를 존중할 때 재물운이 따라와요. 공동 지출은 초반엔 천천히, 신뢰가 쌓이고 나서 합쳐도 늦지 않아요.', rating: 3 },
-      { emoji: '✨', title: '전반적 기운', body: '서로 다른 방향을 보는 기운이지만, 그 차이가 결혼 후 성장의 원동력이 될 수 있어요.' }
-    ]
-  },
-  mid: {
-    score: 73,
-    stars: 4,
-    summary: '잘 어울리는 궁합이에요 💗',
-    oneLine: '재물·가정운은 좋음, 고부관계는 약간 주의',
-    free: [
-      { emoji: '👤', title: '얼굴형 상성', body: '두 분은 서로 부족한 부분을 자연스럽게 채워주는 얼굴형 조합이에요. 안정과 활력이 공존하는 관계예요.' },
-      { emoji: '💰', title: '재물 시너지', body: '결혼 후 3년 이내에 의미 있는 자산 형성이 기대되는 조합이에요. 부동산보다는 공동 투자에 강한 편.', rating: 4 },
-      { emoji: '✨', title: '전반적 기운', body: '햇살 같은 A님의 기운과 달빛 같은 B님의 기운이 서로를 돋보이게 해요.' }
-    ]
-  },
-  high: {
-    score: 92,
-    stars: 5,
-    summary: '천생연분이에요 💕',
-    oneLine: '재물운은 최고, 성격 상성은 조금 주의',
-    free: [
-      { emoji: '👤', title: '얼굴형 상성', body: '두 분은 둥근 형과 달걀형이 만나 부드럽고 안정적인 가정 기운을 만들어요. 서로의 모난 부분을 자연스럽게 덮어줄 수 있는 최상의 조합이에요.' },
-      { emoji: '💰', title: '재물 시너지', body: '재물운이 서로 상승 작용을 일으키는 조합이에요. 결혼 후 맞벌이를 유지한다면 5년 내 의미 있는 자산 형성이 기대돼요.', rating: 5 },
-      { emoji: '✨', title: '전반적 기운', body: '햇살 같은 A님의 기운과 달빛 같은 B님의 기운이 하루를 온전히 채워줘요. 만난 것 자체가 복이에요.' }
-    ]
+onMounted(() => {
+  storedResult.value = getStoredAnalysisResult()
+  if (storedResult.value) startCountUp()
+})
+
+const hasResult = computed(() => storedResult.value !== null)
+
+const FREE_META = [
+  { emoji: '👤', title: '얼굴형 상성' },
+  { emoji: '💰', title: '재물 시너지' },
+  { emoji: '✨', title: '전반적 기운' }
+] as const
+
+const LOCKED_META = [
+  { emoji: '💬', title: '성격 상성' },
+  { emoji: '👨‍👩‍👧', title: '고부관계 예측' },
+  { emoji: '👶', title: '자녀운' },
+  { emoji: '💪', title: '건강 궁합' },
+  { emoji: '📆', title: '결혼 후 3년 예측' },
+  { emoji: '⚠️', title: '주의할 점 3가지' },
+  { emoji: '💚', title: '좋은 점 3가지' }
+] as const
+
+function bullets(arr: string[]): string {
+  return arr.map((x) => `• ${x}`).join('\n')
+}
+
+const data = computed(() => {
+  const r = storedResult.value
+  const scoreVal = r?.overall_score ?? 0
+  const animal = getAnimalByScore(scoreVal)
+  return {
+    score: scoreVal,
+    stars: Math.max(1, Math.min(5, Math.ceil(scoreVal / 20))),
+    summary: animal.summary,
+    oneLine: animal.oneLine,
+    free: r
+      ? [
+          { emoji: FREE_META[0].emoji, title: FREE_META[0].title, body: r.face_shape_compatibility },
+          {
+            emoji: FREE_META[1].emoji,
+            title: FREE_META[1].title,
+            body: r.wealth_synergy.description,
+            rating: r.wealth_synergy.rating
+          },
+          { emoji: FREE_META[2].emoji, title: FREE_META[2].title, body: r.overall_vibe }
+        ]
+      : []
+  }
+})
+
+const lockedSections = computed(() => {
+  const r = storedResult.value
+  if (!r) return []
+  return [
+    { ...LOCKED_META[0], body: r.personality_compatibility },
+    { ...LOCKED_META[1], body: r.in_law_relationship },
+    { ...LOCKED_META[2], body: r.children_fortune },
+    { ...LOCKED_META[3], body: r.health_compatibility },
+    { ...LOCKED_META[4], body: r.three_year_prediction },
+    { ...LOCKED_META[5], body: bullets(r.warnings) },
+    { ...LOCKED_META[6], body: bullets(r.positives) }
+  ]
+})
+
+const unlocked = ref(false)
+const score = ref(0)
+
+const config = useRuntimeConfig()
+const siteUrl = computed(() => (config.public.siteUrl as string) || 'nyangsang.love')
+const shareCardRef = ref<HTMLElement | null>(null)
+
+const shareDate = computed(() => {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}.${m}.${day}`
+})
+
+const shareSections = computed(() => [
+  ...data.value.free.map((f) => ({
+    emoji: f.emoji,
+    title: f.title,
+    body: f.body,
+    rating: 'rating' in f ? (f.rating as number | undefined) : undefined
+  })),
+  ...lockedSections.value.map((l) => ({
+    emoji: l.emoji,
+    title: l.title,
+    body: l.body,
+    rating: undefined as number | undefined
+  }))
+])
+
+const shareAnimal = computed(() => getAnimalByScore(data.value.score))
+const { sharing, shareCardImage } = useKakaoShare()
+const { downloading, downloadCard } = useCardDownload()
+
+function getInnerCardEl(): HTMLElement | null {
+  const wrapper = shareCardRef.value
+  if (!wrapper) return null
+  return wrapper.querySelector('.share-card') as HTMLElement | null
+}
+
+async function onKakaoShare() {
+  const cardEl = getInnerCardEl()
+  if (!cardEl || sharing.value) return
+  try {
+    await shareCardImage({
+      cardEl,
+      score: data.value.score,
+      summary: data.value.summary
+    })
+  } catch {
+    // error.value는 useKakaoShare 안에서 세팅됨. 폴백까지 실패했을 때만 도달.
   }
 }
 
-const LOCKED_SECTIONS = [
-  { emoji: '💬', title: '성격 상성', teaser: '두 분의 성격은 활발함과 차분함의 조화로, 서로 다른 리듬이 관계에 활력을 더해줘요...' },
-  { emoji: '👨‍👩‍👧', title: '고부관계 예측', teaser: '시어머님과의 관계는 초반 약간의 거리감이 있을 수 있지만...' },
-  { emoji: '👶', title: '자녀운', teaser: '자녀는 두 분의 장점을 골고루 물려받을 가능성이 높아요...' },
-  { emoji: '💪', title: '건강 궁합', teaser: '두 분 모두 꾸준한 생활 리듬을 유지하는 편이라...' },
-  { emoji: '📆', title: '결혼 후 3년 예측', teaser: '1년차는 서로 적응하는 시기, 2년차는 안정기, 3년차에는...' },
-  { emoji: '⚠️', title: '주의할 점 3가지', teaser: '가치관이 달라 잦은 대화가 필요해요...' },
-  { emoji: '💚', title: '좋은 점 3가지', teaser: '서로의 부족한 부분을 자연스럽게 채워주는 조합이에요...' }
-]
+async function onDownload() {
+  const cardEl = getInnerCardEl()
+  if (!cardEl || downloading.value) return
+  try {
+    await downloadCard(cardEl, '냥상가_카드.png')
+  } catch {
+    // error.value는 useCardDownload 안에서 세팅됨
+  }
+}
 
-const scoreTier = ref<Tier>('high')
-const mascotPose = ref<'default' | 'thinking' | 'happy'>('happy')
-const data = computed(() => RESULT_DATA[scoreTier.value])
-const stars = computed(() => '★'.repeat(data.value.stars) + '☆'.repeat(5 - data.value.stars))
-const unlocked = ref(false)
-const score = ref(0)
 
 let scoreInterval: ReturnType<typeof setInterval> | null = null
 
@@ -86,7 +159,6 @@ function startCountUp() {
   }, 28)
 }
 
-onMounted(startCountUp)
 watch(() => data.value.score, startCountUp)
 onBeforeUnmount(() => {
   if (scoreInterval) clearInterval(scoreInterval)
@@ -106,8 +178,17 @@ function retry() {
   <div class="screen fade-in">
     <AppHeader title="궁합 결과" show-back @back="back" />
 
+    <div v-if="!hasResult" class="no-result">
+      <div class="nr-emoji">🐾</div>
+      <div class="nr-title">분석 결과가 없어요</div>
+      <div class="nr-desc">사진을 먼저 올려주세냥</div>
+      <button class="primary-btn nr-btn" @click="retry">사진 올리러 가기</button>
+    </div>
+
+    <template v-else>
+
     <div class="hero-bg top-hero">
-      <div class="photos-row" style="padding-top:8px">
+      <div class="photos-row">
         <div class="ph">
           <img v-if="photoA" :src="photoA">
           <FaceA v-else id="ra" />
@@ -118,8 +199,26 @@ function retry() {
           <FaceB v-else id="rb" />
         </div>
       </div>
+
+      <div class="result-animal">
+        <div class="ra-wrap">
+          <div class="ra-glow" />
+          <div class="ra-halo" />
+          <img :src="shareAnimal.src" alt="궁합 동물" class="ra-img" />
+        </div>
+        <div class="ra-name">
+          <span class="ra-emoji">{{ shareAnimal.emoji }}</span>
+          <span class="ra-label">{{ shareAnimal.name }}</span>
+        </div>
+        <span class="ra-badge" :data-rarity="shareAnimal.rarity">
+          <span v-if="shareAnimal.rarity === 'LEGENDARY'" class="ra-spark">✨</span>
+          {{ RARITY_LABEL_KR[shareAnimal.rarity] }}
+          <span v-if="shareAnimal.rarity === 'LEGENDARY'" class="ra-spark">✨</span>
+        </span>
+        <div class="ra-caption">“{{ shareAnimal.caption }}”</div>
+      </div>
+
       <div class="score-wrap">
-        <div class="stars">{{ stars }}</div>
         <div class="score-number">{{ score }}<span class="score-out">/100</span></div>
         <div class="score-summary">{{ data.summary }}</div>
         <div class="score-one">{{ data.oneLine }}</div>
@@ -151,7 +250,7 @@ function retry() {
       <template v-if="!unlocked">
         <div class="eyebrow eyebrow-lavender">자물쇠 · 7개</div>
         <div
-          v-for="s in LOCKED_SECTIONS.slice(0, 3)"
+          v-for="s in lockedSections.slice(0, 3)"
           :key="s.title"
           class="rsec locked-wrap"
         >
@@ -159,7 +258,7 @@ function retry() {
             <div class="head">
               <div class="title"><span class="emoji">{{ s.emoji }}</span>{{ s.title }}</div>
             </div>
-            <div class="body">{{ s.teaser }}</div>
+            <div class="body">{{ s.body }}</div>
           </div>
           <div class="mask">
             <div class="mi">🔒</div>
@@ -176,13 +275,13 @@ function retry() {
 
       <template v-else>
         <div class="eyebrow eyebrow-lavender">✨ 해금됨</div>
-        <template v-for="(s, i) in LOCKED_SECTIONS" :key="s.title">
+        <template v-for="(s, i) in lockedSections" :key="s.title">
           <div class="rsec stagger-in" :style="{ animationDelay: `${i * 50}ms` }">
             <div class="head">
               <div class="title"><span class="emoji">{{ s.emoji }}</span>{{ s.title }}</div>
               <div class="pill locked">UNLOCKED</div>
             </div>
-            <div class="body">{{ s.teaser }} 두 분은 서로의 다름을 이해하며 서서히 발맞춰가는 관계예요. 대화의 리듬만 맞춘다면 장기적으로 깊은 신뢰를 쌓을 수 있어요.</div>
+            <div class="body" style="white-space: pre-line">{{ s.body }}</div>
           </div>
           <div v-if="i === 3" class="ad-spacer"><AdPlaceholder /></div>
         </template>
@@ -191,8 +290,19 @@ function retry() {
       <div class="share-wrap">
         <div class="eyebrow eyebrow-brand">공유</div>
         <div class="share-row">
-          <button class="share-btn"><div class="g">💾</div><div class="t">카드 저장하기</div></button>
-          <button class="share-btn"><div class="g">💬</div><div class="t">카카오톡 공유</div></button>
+          <button class="share-btn" :disabled="downloading" @click="onDownload">
+            <div class="g">{{ downloading ? '⏳' : '💾' }}</div>
+            <div class="t">{{ downloading ? '저장 중...' : '카드 저장하기' }}</div>
+          </button>
+          <button class="share-btn kakao-btn" :disabled="sharing" @click="onKakaoShare">
+            <div class="g">
+              <span v-if="sharing">⏳</span>
+              <svg v-else class="kakao-ic" viewBox="0 0 24 24" width="28" height="28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill="#3A1D1D" d="M12 3C6.48 3 2 6.58 2 11c0 2.74 1.77 5.15 4.44 6.55-.12 1.08-.42 3.44-.48 3.87-.07.54.3.82.76.6.36-.17 4.13-2.77 4.9-3.28.46.05.92.08 1.38.08 5.52 0 10-3.58 10-8S17.52 3 12 3z"/>
+              </svg>
+            </div>
+            <div class="t">{{ sharing ? '준비 중...' : '카카오톡 공유' }}</div>
+          </button>
         </div>
         <button class="secondary-btn retry-btn" @click="retry">다시 분석하기</button>
       </div>
@@ -234,13 +344,156 @@ function retry() {
       </div>
     </div>
 
+    </template>
+
     <AppFooter />
+
+    <div v-if="hasResult" ref="shareCardRef" class="share-card-slot" aria-hidden="true">
+      <ShareCard
+        :score="data.score"
+        :summary="data.summary"
+        :one-line="data.oneLine"
+        :site-url="siteUrl"
+        :date="shareDate"
+        :animal="shareAnimal"
+        :sections="shareSections"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.top-hero { padding: 0 0 24px; }
+.top-hero {
+  padding: 8px 0 28px;
+  text-align: center;
+}
 .body-wrap { padding: 20px 20px 0; }
+
+.top-hero :deep(.photos-row) {
+  gap: 20px;
+  padding: 4px 20px 4px;
+  justify-content: center;
+}
+.top-hero :deep(.photos-row .ph) {
+  width: 148px;
+  height: 148px;
+  border-radius: 26px;
+  border-width: 3px;
+}
+.top-hero :deep(.photos-row .heart) {
+  font-size: 40px;
+}
+.top-hero :deep(.score-wrap) {
+  padding: 16px 20px 4px;
+  align-items: center;
+  text-align: center;
+}
+
+/* === Animal reveal (main result) === */
+.result-animal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 4px;
+}
+.ra-wrap {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ra-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(236, 72, 153, 0.28) 0%,
+    rgba(236, 72, 153, 0.12) 45%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(10px);
+}
+.ra-halo {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #fff 0%, rgba(255,255,255,0.4) 45%, transparent 70%);
+}
+.ra-img {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 22px rgba(139, 92, 246, 0.28));
+}
+.ra-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+.ra-emoji { font-size: 26px; line-height: 1; }
+.ra-label {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+
+.ra-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  color: #fff;
+  background: #9CA3AF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.ra-badge[data-rarity="COMMON"]   { background: #9CA3AF; }
+.ra-badge[data-rarity="UNCOMMON"] { background: #10B981; }
+.ra-badge[data-rarity="RARE"]     { background: #3B82F6; }
+.ra-badge[data-rarity="EPIC"]     { background: #8B5CF6; }
+.ra-badge[data-rarity="LEGENDARY"] {
+  font-size: 14px;
+  padding: 8px 18px;
+  letter-spacing: 0.18em;
+  background: linear-gradient(
+    125deg,
+    #FBBF24 0%, #F59E0B 18%, #EC4899 38%,
+    #8B5CF6 55%, #3B82F6 72%, #F59E0B 92%, #FBBF24 100%
+  );
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(139, 92, 246, 0.35);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.8),
+    0 0 0 5px rgba(251, 191, 36, 0.5),
+    0 8px 18px rgba(236, 72, 153, 0.4);
+}
+.ra-spark { font-size: 14px; filter: drop-shadow(0 0 6px rgba(255, 236, 130, 0.9)); }
+
+.ra-caption {
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-align: center;
+  max-width: 360px;
+  box-shadow: 0 8px 18px rgba(236, 72, 153, 0.14);
+  margin-top: 4px;
+}
 
 .eyebrow {
   font-size: 10px;
@@ -293,4 +546,64 @@ function retry() {
 }
 .signoff-img { flex-shrink: 0; object-fit: contain; }
 .signoff-sub { color: var(--gray-500); font-size: 11px; }
+
+.share-card-slot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 720px;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.share-btn[disabled] {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.share-btn.kakao-btn {
+  background: #FEE500;
+  border-color: #FEE500;
+}
+.share-btn.kakao-btn:hover:not([disabled]) {
+  background: #FDDD00;
+}
+.share-btn.kakao-btn .t {
+  color: #3A1D1D;
+  font-weight: 800;
+}
+.share-btn.kakao-btn .kakao-ic {
+  display: block;
+}
+
+.no-result {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 32px;
+  text-align: center;
+}
+.nr-emoji { font-size: 54px; line-height: 1; }
+.nr-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+.nr-desc {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.nr-btn {
+  margin-top: 18px;
+  max-width: 280px;
+  width: 100%;
+}
 </style>

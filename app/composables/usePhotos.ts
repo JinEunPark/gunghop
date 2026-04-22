@@ -1,3 +1,5 @@
+import type { AnalysisResult } from '~~/shared/types/analysis'
+
 const PHOTO_A_KEY = 'photoA'
 const PHOTO_B_KEY = 'photoB'
 const RESULT_KEY = 'analysisResult'
@@ -39,4 +41,22 @@ export function getStoredPhotos() {
     photoA: read(PHOTO_A_KEY),
     photoB: read(PHOTO_B_KEY)
   }
+}
+
+export function saveAnalysisResult(result: AnalysisResult) {
+  write(RESULT_KEY, JSON.stringify(result))
+}
+
+export function getStoredAnalysisResult(): AnalysisResult | null {
+  const raw = read(RESULT_KEY)
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as AnalysisResult
+  } catch {
+    return null
+  }
+}
+
+export function clearAnalysisResult() {
+  write(RESULT_KEY, null)
 }

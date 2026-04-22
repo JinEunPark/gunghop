@@ -5,16 +5,26 @@ defineProps<{ label: string }>()
 
 const value = defineModel<string | null>({ required: true })
 const inputRef = ref<HTMLInputElement | null>(null)
+const busy = ref(false)
+const { compressToDataUrl } = useImageCompress()
 
-function onPick(e: Event) {
+async function onPick(e: Event) {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => {
-    value.value = reader.result as string
+  busy.value = true
+  try {
+    value.value = await compressToDataUrl(file)
+  } catch (err) {
+    console.error('[PhotoSlot] compress failed, using original', err)
+    const reader = new FileReader()
+    reader.onload = () => {
+      value.value = reader.result as string
+    }
+    reader.readAsDataURL(file)
+  } finally {
+    busy.value = false
   }
-  reader.readAsDataURL(file)
 }
 
 function clear(e: Event) {
@@ -24,16 +34,20 @@ function clear(e: Event) {
 }
 
 function pickFile() {
-  if (!value.value) inputRef.value?.click()
+  if (!value.value && !busy.value) inputRef.value?.click()
 }
 </script>
 
 <template>
   <div>
-    <div class="uploader" :class="{ filled: !!value }" @click="pickFile">
+    <div class="uploader" :class="{ filled: !!value, busy }" @click="pickFile">
       <template v-if="value">
         <img :src="value" :alt="label">
         <button class="x" @click="clear">✕</button>
+      </template>
+      <template v-else-if="busy">
+        <span class="icon">⏳</span>
+        <span class="label">이미지 준비 중...</span>
       </template>
       <template v-else>
         <span class="icon">📷</span>

@@ -2,25 +2,25 @@
 
 ## Phase 1: 핵심 백엔드 (배포 차단 항목)
 
-- [ ] `shared/types/analysis.ts` — AnalysisResult 타입 정의
-- [ ] `server/utils/prompts.ts` — Gemini 시스템/유저 프롬프트 작성
-- [ ] `server/utils/validateResult.ts` — Gemini 응답 JSON 스키마 검증
-- [ ] `server/api/analyze.post.ts` — Gemini 2.5 Flash API 호출 엔드포인트
-  - 요청 검증, IP 기반 rate limiting, base64 이미지 처리
-- [ ] `app/composables/useAnalyze.ts` — API 호출 래퍼 (로딩/에러 상태 관리)
-- [ ] `analyzing.vue` 실제 API 연동 — 현재 9.1초 대기 후 자동 이동하는 목업 제거
+- [x] `shared/types/analysis.ts` — AnalysisResult 타입 정의 (summary/one_liner 제외, B-1 옵션)
+- [x] `server/utils/prompts.ts` — Gemini 시스템/유저 프롬프트 작성
+- [x] `server/utils/validateResult.ts` — Gemini 응답 JSON 스키마 검증
+- [x] `server/api/analyze.post.ts` — Gemini 2.5 Flash API 호출 엔드포인트
+  - 요청 검증, IP 기반 rate limiting(24시간 10회), base64 이미지 처리, 재시도 1회
+- [x] `app/composables/useAnalyze.ts` — API 호출 래퍼 (로딩/에러 상태 관리)
+- [x] `analyzing.vue` 실제 API 연동 — 목업 제거, NO_FACE/RATE_LIMIT/AI_ERROR 에러 UI 포함
 
 ## Phase 2: 결과 페이지 실데이터 연동
 
-- [ ] `result.vue` 하드코딩된 RESULT_DATA 제거, sessionStorage에서 실제 분석 결과 로드
-- [ ] 분석 결과 없을 때 에러 UI ("분석 결과가 없어요") 표시
-- [ ] NO_FACE 등 Gemini 에러 케이스 핸들링
+- [x] `result.vue` 하드코딩된 RESULT_DATA 제거, sessionStorage에서 실제 분석 결과 로드
+- [x] 분석 결과 없을 때 에러 UI ("분석 결과가 없어요") 표시
+- [x] NO_FACE 등 Gemini 에러 케이스 핸들링 (analyzing.vue에서 처리)
 
 ## Phase 3: 유틸리티 composable
 
-- [ ] `app/composables/useImageCompress.ts` — browser-image-compression 활용 (512x512, JPEG 0.8)
-- [ ] `app/composables/useCardDownload.ts` — html-to-image로 결과 카드 PNG 저장
-- [ ] `app/composables/useKakaoShare.ts` — 카카오톡 공유 기능
+- [x] `app/composables/useImageCompress.ts` — browser-image-compression 활용 (512x512, JPEG 0.8), PhotoSlot에 연결
+- [x] `app/composables/useCardDownload.ts` — html-to-image로 결과 카드 PNG 저장
+- [x] `app/composables/useKakaoShare.ts` — 카카오톡 공유 기능 (uploadImage → sendDefault, 폴백: sendScrap)
 
 ## Phase 4: 설정 & SEO
 
@@ -33,13 +33,17 @@
 ## Phase 5: 수익화
 
 - [ ] AdSense 스크립트 로드 및 실제 광고 슬롯 교체 (AdPlaceholder → 실 배너)
-  - 결과 페이지 배너 3개, analyzing 진입 시 전면광고, 카카오 공유 전 전면광고
+- [ ] 분석 완료 → 결과 보기 전 전면광고(Interstitial) 삽입 (핵심 수익 포인트)
+  - 분석 완료 시 "결과가 준비됐어요" UI → 전면광고 → result 페이지 이동
+  - 광고 로딩 실패 시에도 결과 페이지로 이동 가능하도록 fallback 처리
+- [ ] 결과 페이지 내 배너 광고 3개 (보조 수익)
+- [ ] 카카오 공유 전 전면광고
 - [ ] `?noads=1` 쿼리 파라미터로 광고 비활성화 지원
 
 ## Phase 6: 법적 페이지
 
-- [ ] `app/pages/terms.vue` — 이용약관
-- [ ] `app/pages/privacy.vue` — 개인정보처리방침
+- [x] `app/pages/terms.vue` — 이용약관
+- [x] `app/pages/privacy.vue` — 개인정보처리방침
 
 ## Phase 7: 에러 처리 & 안정성
 
