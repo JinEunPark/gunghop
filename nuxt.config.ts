@@ -80,7 +80,8 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    exclude: ['/analyzing', '/result']
+    exclude: ['/analyzing', '/result'],
+    xsl: false
   },
 
   runtimeConfig: {
