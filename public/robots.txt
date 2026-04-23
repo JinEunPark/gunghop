@@ -1,2 +1,6 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+Disallow: /analyzing
+Disallow: /result
+
+Sitemap: https://gunghop.vercel.app/sitemap.xml

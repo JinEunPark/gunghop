@@ -28,10 +28,21 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  modules: ['@nuxtjs/sitemap'],
+
   css: ['~/assets/css/main.css'],
 
   nitro: {
     preset: 'vercel'
+  },
+
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://gunghop.vercel.app',
+    name: '냥상가'
+  },
+
+  sitemap: {
+    exclude: ['/analyzing', '/result']
   },
 
   runtimeConfig: {
