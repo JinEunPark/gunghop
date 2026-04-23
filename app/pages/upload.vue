@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: '사진 업로드 · 냥상가' })
+usePageSeo({
+  title: '사진 업로드 · 냥상가',
+  description: '두 분의 얼굴 사진을 업로드하면 AI가 결혼 관상 궁합을 분석해드려요.'
+})
 
 const router = useRouter()
 const { photoA, photoB } = usePhotos()

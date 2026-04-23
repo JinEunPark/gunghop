@@ -2,7 +2,11 @@
 import type { AnalyzeError } from '~/composables/useAnalyze'
 import type { AnalyzeErrorCode } from '~~/shared/types/analysis'
 
-useHead({ title: '분석 중 · 냥상가' })
+usePageSeo({
+  title: '분석 중 · 냥상가',
+  description: 'AI가 두 분의 관상을 분석 중이에요.',
+  noindex: true
+})
 
 const FAILURE_META: Record<AnalyzeErrorCode, { emoji: string; title: string }> = {
   NO_FACE: { emoji: '😿', title: '얼굴을 못 찾았다냥' },

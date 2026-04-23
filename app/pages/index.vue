@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: '냥상가 · 결혼 관상 궁합' })
+usePageSeo({
+  title: '냥상가 · 결혼 관상 AI 궁합',
+  description: '얼굴 사진 2장으로 AI가 결혼 관상 궁합을 분석해드려요. 재물·가정·자녀·건강운까지 3분 만에 무료로 확인하세요.'
+})
 
 const steps = [
   { n: '01', t: '사진 2장 업로드', d: '내 사진과 상대방 사진을 올려주세요', g: '📷' },
@@ -58,6 +61,10 @@ const sampleStats = [
       <div class="cta-note">
         30초면 결과 완성 · 로그인 불필요
       </div>
+    </div>
+
+    <div class="home-ad">
+      <AdUnit slot="" label="배너 광고" />
     </div>
 
     <div class="section">
@@ -222,6 +229,7 @@ const sampleStats = [
 .cta { margin-top: 22px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 .cta-note { font-size: 10px; color: var(--gray-500); text-align: center; margin-top: 8px; }
 
+.home-ad { padding: 20px 20px 0; }
 .section { padding: 28px 20px 0; }
 .eyebrow {
   font-size: 10px;

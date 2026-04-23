@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: '이용약관 · 냥상가' })
+usePageSeo({
+  title: '이용약관 · 냥상가',
+  description: '냥상가 서비스 이용약관을 안내해드려요.'
+})
 
 const router = useRouter()
 function back() {

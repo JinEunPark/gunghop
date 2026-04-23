@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: '개인정보처리방침 · 냥상가' })
+usePageSeo({
+  title: '개인정보처리방침 · 냥상가',
+  description: '냥상가 개인정보처리방침 — 수집 항목과 보관 기간을 확인하세요.'
+})
 
 const router = useRouter()
 function back() {

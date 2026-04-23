@@ -24,11 +24,11 @@
 
 ## Phase 4: 설정 & SEO
 
-- [ ] `nuxt.config.ts` SEO 메타태그 추가 (og:image, description, twitter:card)
+- [x] `nuxt.config.ts` SEO 메타태그 추가 (og:image, description, twitter:card)
 - [ ] Google Analytics 4 스크립트 연동
 - [ ] Microsoft Clarity 스크립트 연동
-- [ ] Kakao SDK 스크립트 로드 (`app.head`)
-- [ ] canonical URL 설정
+- [x] Kakao SDK 스크립트 로드 (`app.head`)
+- [x] canonical URL 설정 (usePageSeo composable, 전 페이지 적용)
 
 ## Phase 5: 수익화
 
@@ -44,23 +44,24 @@
 - [ ] https://www.google.com/adsense/ 대시보드 접속 → 승인 상태 확인
 - [ ] 사이트 설정에서 **ads.txt 파일 다운로드** → `public/ads.txt`에 업로드 후 배포
   - 파일 위치: `https://gunghop.vercel.app/ads.txt` 에서 접근 가능해야 함
-- [ ] 광고 → 광고 단위 기준 → **디스플레이 광고** 4개 생성:
+- [ ] 광고 → 광고 단위 기준 → **디스플레이 광고** 5개 생성:
+  - `home-mid` — 홈(index) CTA 아래 배너
   - `result-top` — 결과 페이지 상단 배너
   - `result-native` — 결과 페이지 네이티브 (fluid)
   - `result-middle` — 결과 섹션 사이 배너
   - `analyzing-fullscreen` — 분석 페이지 전면
 - [ ] 각 광고 단위 생성 시 **data-ad-slot** 숫자 10자리 복사
-- [ ] 알려주시면 `<AdUnit slot="...">` 의 `slot=""` 4곳을 바로 교체 드림
+- [ ] 알려주시면 `<AdUnit slot="...">` 의 `slot=""` 5곳을 바로 교체 드림
 - [ ] 자동 광고는 OFF 유지 (UI 흐름 보존)
 - [ ] 승인 후 **카카오 공유 전 전면광고**는 추후 Phase 5-2에서 고려
 
 ### 🔔 [본인 작업] 쿠팡 파트너스 가입 및 딥링크
-- [ ] https://partners.coupang.com 가입 신청 (승인 1-2일)
-- [ ] 승인 후 상품 검색 → 딥링크 생성 (3개):
-  - "커플링" / "예물 반지" 검색 → 인기 상품 또는 검색 결과 페이지 딥링크
-  - "결혼선물" / "양가 선물" 검색 → 딥링크
-  - "궁합 책" / "사주 책" 검색 → 딥링크
-- [ ] 알려주시면 `result.vue` 의 `href="#"` 3곳을 바로 교체 드림
+- [x] https://partners.coupang.com 가입 신청 (승인 1-2일)
+- [x] 승인 후 상품 검색 → 딥링크 생성 (3개):
+  - [x] 💍 커플링 · 예물 반지 → `coupa.ng/cmxjkx`
+  - [x] 🛁 커플 입욕제 · 홈스파 → `link.coupang.com/a/euMcPZ` (웨딩 선물에서 변경)
+  - [x] 🌿 이솝 룸 스프레이 → `link.coupang.com/a/euMiyV` (궁합 책에서 변경)
+- [x] `result.vue` 의 `href="#"` 3곳 교체 완료
 - [ ] (참고) 쿠팡 딥링크 쿠키는 24시간 — 방문자가 쿠팡에서 다른 상품 사도 수수료 발생
 
 ## Phase 6: 법적 페이지
@@ -72,8 +73,8 @@
 
 - [ ] `error.vue` — 글로벌 에러 바운더리
 - [ ] 404 페이지
-- [ ] 네트워크 에러 / API 타임아웃 UI
-- [ ] rate limit 초과 시 사용자 안내 메시지
+- [x] 네트워크 에러 / API 타임아웃 UI (useAnalyze AI_ERROR 폴백 → analyzing.vue 실패 화면 + 재시도 버튼)
+- [x] rate limit 초과 시 사용자 안내 메시지 (RATE_LIMIT 케이스 analyzing.vue에서 전용 UI 처리)
 
 ## Phase 8: 이미지 정리
 

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { AnalysisResult } from '~~/shared/types/analysis'
 
-useHead({ title: '궁합 결과 · 냥상가' })
+usePageSeo({
+  title: '궁합 결과 · 냥상가',
+  description: 'AI가 분석한 결혼 관상 궁합 결과를 확인하세요.',
+  noindex: true
+})
 
 const router = useRouter()
 const { photoA, photoB, reset } = usePhotos()
@@ -315,7 +319,7 @@ function retry() {
 
       <div class="aff-wrap">
         <div class="eyebrow eyebrow-brand">두 분께 추천해요</div>
-        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
+        <a class="aff-card" href="https://coupa.ng/cmxjkx" target="_blank" rel="sponsored nofollow noopener">
           <div class="ic">💍</div>
           <div class="aff-text">
             <div class="title">커플링 · 예물 반지 <span class="badge-ad">광고</span></div>
@@ -323,19 +327,19 @@ function retry() {
           </div>
           <div class="arrow">→</div>
         </a>
-        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
-          <div class="ic">🎁</div>
+        <a class="aff-card" href="https://link.coupang.com/a/euMcPZ" target="_blank" rel="sponsored nofollow noopener">
+          <div class="ic">🛁</div>
           <div class="aff-text">
-            <div class="title">웨딩 · 결혼 선물 <span class="badge-ad">광고</span></div>
-            <div class="sub">양가 부모님 선물 추천</div>
+            <div class="title">커플 입욕제 · 홈스파 <span class="badge-ad">광고</span></div>
+            <div class="sub">둘이 함께하는 힐링 타임</div>
           </div>
           <div class="arrow">→</div>
         </a>
-        <a class="aff-card" href="#" target="_blank" rel="sponsored nofollow noopener">
-          <div class="ic">📖</div>
+        <a class="aff-card" href="https://link.coupang.com/a/euMiyV" target="_blank" rel="sponsored nofollow noopener">
+          <div class="ic">🌿</div>
           <div class="aff-text">
-            <div class="title">궁합 · 사주 책 <span class="badge-ad">광고</span></div>
-            <div class="sub">더 깊이 알아보기</div>
+            <div class="title">이솝 룸 스프레이 <span class="badge-ad">광고</span></div>
+            <div class="sub">커플의 공간을 채우는 향</div>
           </div>
           <div class="arrow">→</div>
         </a>

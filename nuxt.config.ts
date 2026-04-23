@@ -51,7 +51,12 @@ export default defineNuxtConfig({
       title: '결혼 관상 AI 궁합',
       meta: [
         { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#ffd5e0' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: '냥상가' },
+        { property: 'og:locale', content: 'ko_KR' },
+        { name: 'twitter:card', content: 'summary_large_image' }
       ],
       link: [
         { rel: 'icon', type: 'image/webp', href: '/assets/main_logo_char.webp' },
