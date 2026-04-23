@@ -18,7 +18,7 @@ export function usePageSeo(opts: {
 
   const siteUrl = resolveSiteUrl((config.public.siteUrl as string) || '')
   const pageUrl = `${siteUrl}${route.path}`
-  const ogImage = `${siteUrl}${opts.ogImagePath ?? '/assets/main_logo_char.webp'}`
+  const ogImage = `${siteUrl}${opts.ogImagePath ?? '/og-image.png'}`
 
   useSeoMeta({
     title: opts.title,
@@ -26,10 +26,15 @@ export function usePageSeo(opts: {
     ogTitle: opts.title,
     ogDescription: opts.description,
     ogImage,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
+    ogImageType: 'image/png',
+    ogImageAlt: opts.title,
     ogUrl: pageUrl,
     twitterTitle: opts.title,
     twitterDescription: opts.description,
     twitterImage: ogImage,
+    twitterImageAlt: opts.title,
     robots: opts.noindex ? 'noindex, nofollow' : 'index, follow'
   })
 
