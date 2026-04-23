@@ -81,7 +81,12 @@ export default defineNuxtConfig({
 
   sitemap: {
     exclude: ['/analyzing', '/result'],
-    xsl: false
+    xsl: false,
+    autoLastmod: true,
+    defaults: {
+      changefreq: 'weekly',
+      priority: 0.8
+    }
   },
 
   runtimeConfig: {
