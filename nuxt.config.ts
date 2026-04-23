@@ -1,13 +1,19 @@
 /// <reference types="node" />
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const adsenseClient = process.env.NUXT_PUBLIC_ADSENSE_CLIENT
+const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://gunghop.vercel.app'
 
-type HeadScript = {
-  src: string
-  defer?: boolean
-  async?: boolean
-  crossorigin?: '' | 'anonymous' | 'use-credentials'
-}
+type HeadScript =
+  | {
+      src: string
+      defer?: boolean
+      async?: boolean
+      crossorigin?: '' | 'anonymous' | 'use-credentials'
+    }
+  | {
+      type: string
+      innerHTML: string
+    }
 
 const headScripts: HeadScript[] = [
   {
@@ -23,6 +29,38 @@ if (adsenseClient) {
     crossorigin: 'anonymous'
   })
 }
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      name: '냥상가',
+      alternateName: '결혼 관상 AI 궁합',
+      url: siteUrl,
+      inLanguage: 'ko-KR',
+      description: '얼굴 사진 2장으로 AI가 결혼 관상 궁합을 분석해주는 서비스'
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: '냥상가',
+      url: siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/icon-512.png`,
+        width: 512,
+        height: 512
+      }
+    }
+  ]
+}
+
+headScripts.push({
+  type: 'application/ld+json',
+  innerHTML: JSON.stringify(structuredData)
+})
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
